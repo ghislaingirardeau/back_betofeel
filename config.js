@@ -5,9 +5,9 @@
 let configWeb = {
     host: 'sql11.freemysqlhosting.net',
     port: 3306,
-    user: `${process.env.USER_DB}`,
-    password: `${process.env.PASSWORD_DB}`,
-    database: `${process.env.DATABASE_DB}`
+    user: `sql11432453`,
+    password: `XIuZIjH6Cu`,
+    database: `sql11432453`
 }
 
 /* Pour une connection en locale à mysql exporter config */
