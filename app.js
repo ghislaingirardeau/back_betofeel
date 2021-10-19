@@ -2,6 +2,7 @@ const express = require('express')
 
 const users = require('./routes/user')
 const feelings = require('./routes/feeling')
+const share = require('./routes/share')
 
 const app = express()
 
@@ -18,5 +19,6 @@ app.use(express.json())
 app.get('/', (req, res) => res.send('Success!!!'));
 app.use('/api/', users)
 app.use('/api/feeling', feelings)
+app.use('/api/share', share)
 
 module.exports = app

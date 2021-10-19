@@ -3,7 +3,7 @@
 
 /* Pour une connection en ligne à mysql exporter configWeb (par défaut) */
 let configWeb = {
-    host: 'sql11.freemysqlhosting.net',
+    host: `${process.env.HOST_DB}`,
     port: 3306,
     user: `${process.env.USER_DB}`,
     password: `${process.env.PASSWORD_DB}`,
