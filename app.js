@@ -6,16 +6,23 @@ const share = require('./routes/share')
 
 const app = express()
 
+const corsOptions ={
+  origin:'*', 
+  credentials:true,            //access-control-allow-credentials:true
+  optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions))
+
 /* Configuration du header */
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'https://betofeel.netlify.app/')
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH')
   next()
-})    
+})    */ 
 
 app.use(express.json())
-app.use(cors())
 
 app.get('/', (req, res) => res.send('Success!!!'));
 app.use('/api/', users)

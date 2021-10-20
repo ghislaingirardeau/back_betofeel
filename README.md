@@ -10,7 +10,7 @@ deploy =
 config.js en web
 aller dans le repertoire backend
 commit les changement
-puis git push origin master;
+puis git push origin master; => envoie sur le repo backend_base
 
 heroku suivre tuto youtube
 ressource = ajouter addon clear Db, recup de env. dans le setting
