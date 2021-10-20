@@ -1,5 +1,5 @@
 const express = require('express')
-const cors = require('cors')
+/* const cors = require('cors') */
 const users = require('./routes/user')
 const feelings = require('./routes/feeling')
 const share = require('./routes/share')
@@ -15,7 +15,7 @@ app.use((req, res, next) => {
 })    
 
 app.use(express.json())
-app.use(cors())
+/* app.use(cors()) */
 
 app.get('/', (req, res) => res.send('Success!!!'));
 app.use('/api/', users)
