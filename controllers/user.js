@@ -4,8 +4,18 @@ const jwt = require('jsonwebtoken')
 /* CONNECTION MYSQL */
 const mysql = require('mysql');
 const config = require('../config');
+/* FOR PERMANENT CONNECTION BUT CRASH APP ON HEROKU */
 /* const connection = mysql.createConnection(config); */
+/* connection.connect(function(err) {
+    if (err) {
+      return console.error('error: ' + err.message);
+    }
+console.log('Connected to the MySQL server');
+}); */
 
+
+/* CREATION FONCTION POUR GERER LE CRASH ET RELANCER LA CONNECTION */
+// APPEL LA FONCTION SEULEMENT LORS DE L'APPEL DE LA ROUTE
 var connection;
 
 function handleDisconnect() {
@@ -30,20 +40,12 @@ function handleDisconnect() {
   });
 }
 
-handleDisconnect();
-
-/* connection.connect(function(err) {
-    if (err) {
-      return console.error('error: ' + err.message);
-    }
-console.log('Connected to the MySQL server');
-}); */
-
 const salt = 10
 
 /* signup */
 
 exports.signup = (req, res, next) => {
+    handleDisconnect();
 
     const regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
     const regexPassword = /^.*(?=.{6,})(?=.*\d)(?=.*[a-zA-Z]).*$/ /* Minimum 6 caracteres dont 1 lettre et une chiffre */
@@ -99,6 +101,7 @@ exports.signup = (req, res, next) => {
 }
 
 exports.login = (req, res, next) => { 
+    handleDisconnect();
 
     const sql = `SET @pseudo="${req.body.pseudo}"`;
     connection.query(sql, (error, results, fields) => {
