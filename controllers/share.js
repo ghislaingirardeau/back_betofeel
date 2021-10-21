@@ -26,9 +26,10 @@ function handleDisconnect() {
     }
   });
 }
+handleDisconnect();
 
 exports.searchUser = (req, res, next) => {
-    handleDisconnect();
+    
     const sql = `select id from user where pseudo='${req.body.searchPseudo}'`
     connection.query(sql, (error, results, fields) => {
  
@@ -54,7 +55,7 @@ exports.searchUser = (req, res, next) => {
 }
 
 exports.responseSharing = (req, res, next) => {
-    handleDisconnect();
+
     const sql = `update sharing set status='${req.body.responseStatus}' where connectFrom='${req.body.idFrom}' 
     AND connectTo='${req.body.user_id}'`
     connection.query(sql, (error, results, fields) => {
@@ -82,7 +83,7 @@ exports.feelingUser = (req, res, next) => {
     /* renvoie 3 tableaux: un avec toutes les emotions
     un avec tous les utilisateurs partagé ou rejeté
     un avec toutes les demandes de partage en cours */
-    handleDisconnect();
+    
     const sql = `CALL user_share("${req.body.user_id}")`
     connection.query(sql, (error, results, fields) => {
         if (error) {
@@ -97,7 +98,7 @@ exports.feelingUser = (req, res, next) => {
 }
 
 exports.deleteSharing = (req, res, next) => { 
-    handleDisconnect();
+    
     const sql = `SET @connectTo="${req.body.connectTo}", @user_id='${req.body.user_id}'`
     connection.query(sql, (error, results, fields) => {
 

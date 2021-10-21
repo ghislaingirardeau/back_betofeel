@@ -26,13 +26,13 @@ function handleDisconnect() {
     }
   });
 }
-
+handleDisconnect();
 
 exports.allFeeling = (req, res, next) => { 
     /* renvoie 3 tableaux: un avec toutes les emotions
     un avec tous les utilisateurs partagé ou rejeté
     un avec toutes les demandes de partage en cours */
-    handleDisconnect();
+    
     const sql = `CALL user_connect("${req.body.user_id}")`
     connection.query(sql, (error, results, fields) => {
 
@@ -47,7 +47,6 @@ exports.allFeeling = (req, res, next) => {
 }
 
 exports.createnegative = (req, res, next) => { 
-    handleDisconnect();
     /* const sql = `CALL add_negative("${req.body.user_id}", "${req.body.feeling}")` */
     const sql = `INSERT INTO negative (feeling_neg, date, user_id)
     VALUES ("${req.body.feeling}", (SELECT NOW()), "${req.body.user_id}");`
@@ -62,7 +61,6 @@ exports.createnegative = (req, res, next) => {
 }
 
 exports.createpositive = (req, res, next) => { 
-    handleDisconnect();
     /* const sql = `CALL add_positive("${req.body.user_id}", "${req.body.feeling}")` */
     const sql = `INSERT INTO positive (feeling_pos, date, user_id)
     VALUES ("${req.body.feeling}", (SELECT NOW()), "${req.body.user_id}");`
