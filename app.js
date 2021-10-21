@@ -6,25 +6,26 @@ const share = require('./routes/share')
 
 const app = express()
 
-var whitelist = ['http://localhost:8000', 'https://betofeel.netlify.app']
+/* var whitelist = ['http://localhost:8000', 'https://betofeel.netlify.app']
 
 const corsOptions ={
-/*   origin: function (origin, callback) {
+  origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
     }
-  }, */
+  },
   origin: "https://betofeel.netlify.app",
   credentials:true,            
   optionSuccessStatus:200,
 }
 
-app.use(cors(corsOptions))
+app.use(cors(corsOptions)) */
 
 /* Configuration du header */
 app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://betofeel.netlify.app')
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH')
   next()
