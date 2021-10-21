@@ -6,7 +6,7 @@ const share = require('./routes/share')
 
 const app = express()
 
-var whitelist = ['http://localhost:8000', 'https://betofeel.netlify.app']
+var whitelist = ['https://betofeel.netlify.app']
 
 const corsOptions ={
   origin: function (origin, callback) {
