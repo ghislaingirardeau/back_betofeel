@@ -9,7 +9,7 @@ const app = express()
 var whitelist = ['https://betofeel.netlify.app']
 
 const corsOptions ={
-  origin: '*',
+  origin: ['https://betofeel.netlify.app', 'http://localhost:8000'],
   credentials:true,            
   optionSuccessStatus:200,
 }
