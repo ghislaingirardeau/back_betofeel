@@ -1,51 +1,78 @@
 /* CONNECTION MYSQL */
 const mysql = require('mysql')
 const config = require('../config')
-const connection = mysql.createConnection(config);
 
-exports.allFeeling = (req, res, next) => { 
+function closeDb (connection) {
+    connection.end(function(err) {
+        if (err) {
+          return console.log('error:' + err.message);
+        }
+        console.log('Close the database connection.');
+    });
+}
+
+
+exports.allFeeling = async (req, res, next) => { 
     /* renvoie 3 tableaux: un avec toutes les emotions
     un avec tous les utilisateurs partagé ou rejeté
     un avec toutes les demandes de partage en cours */
+    const connection = await mysql.createConnection(config)
+    if(connection) {
+        const sql = `CALL user_connect("${req.body.user_id}")`
+        connection.query(sql, (error, results, fields) => {
     
-    const sql = `CALL user_connect("${req.body.user_id}")`
-    connection.query(sql, (error, results, fields) => {
-
-        if (error) {
-            res.status(400).json({message: "echec get data de user"})
-        } else if (results) {
-            res.status(200).json({
-                results                
-            })
-        }
-    })
+            if (error) {
+                res.status(400).json({message: "echec get data de user"})
+                closeDb(connection)
+            } else if (results) {
+                res.status(200).json({
+                    results                
+                })
+                closeDb(connection)
+            }
+        })
+    }
 }
 
-exports.createnegative = (req, res, next) => { 
-    /* const sql = `CALL add_negative("${req.body.user_id}", "${req.body.feeling}")` */
-    const sql = `INSERT INTO negative (feeling_neg, date, user_id)
-    VALUES ("${req.body.feeling}", (SELECT NOW()), "${req.body.user_id}");`
-    connection.query(sql, (error, results, fields) => {
+exports.createnegative = async (req, res, next) => { 
 
-        if (error) {
-            res.status(400).json({message: 'echec de creation'})
-        } else if (results) {
-            res.status(200).json({message: 'Impression envoyé'})
-        }
-    })
+    const connection = await mysql.createConnection(config)
+    if(connection) {
+        /* const sql = `CALL add_negative("${req.body.user_id}", "${req.body.feeling}")` */
+        const sql = `INSERT INTO negative (feeling_neg, date, user_id)
+        VALUES ("${req.body.feeling}", (SELECT NOW()), "${req.body.user_id}");`
+        connection.query(sql, (error, results, fields) => {
+
+            if (error) {
+                res.status(400).json({message: 'echec de creation'})
+                closeDb(connection)
+            } else if (results) {
+                res.status(200).json({message: 'Impression envoyé'})
+                closeDb(connection)
+            }
+        })
+    }
+
 }
 
-exports.createpositive = (req, res, next) => { 
-    /* const sql = `CALL add_positive("${req.body.user_id}", "${req.body.feeling}")` */
-    const sql = `INSERT INTO positive (feeling_pos, date, user_id)
-    VALUES ("${req.body.feeling}", (SELECT NOW()), "${req.body.user_id}");`
-    connection.query(sql, (error, results, fields) => {
+exports.createpositive = async (req, res, next) => { 
 
-        if (error) {
-            res.status(400).json({message: 'echec de creation'})
-        } else if (results) {
-            res.status(200).json({message: 'Impression envoyé'})
-        }
-    })
+    const connection = await mysql.createConnection(config)
+    if(connection) {
+        /* const sql = `CALL add_positive("${req.body.user_id}", "${req.body.feeling}")` */
+        const sql = `INSERT INTO positive (feeling_pos, date, user_id)
+        VALUES ("${req.body.feeling}", (SELECT NOW()), "${req.body.user_id}");`
+        connection.query(sql, (error, results, fields) => {
+
+            if (error) {
+                res.status(400).json({message: 'echec de creation'})
+                closeDb(connection)
+            } else if (results) {
+                res.status(200).json({message: 'Impression envoyé'})
+                closeDb(connection)
+            }
+        })
+    }
+
 }
 

@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken')
 const mysql = require('mysql');
 const config = require('../config');
 
-
 function closeDb (connection) {
     connection.end(function(err) {
         if (err) {
