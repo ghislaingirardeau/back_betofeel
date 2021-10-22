@@ -128,7 +128,7 @@ exports.login = async (req, res, next) => {
     }
 }
 
-exports.test = async (req, res, next) => {
+/* exports.test = async (req, res, next) => {
     
     const connection = await mysql.createConnection(config)
     if(connection) {
@@ -145,4 +145,4 @@ exports.test = async (req, res, next) => {
         }
     }
     
-}
+} */
