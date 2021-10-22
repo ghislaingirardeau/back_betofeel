@@ -9,7 +9,7 @@ const app = express()
 var whitelist = ['https://betofeel.netlify.app']
 
 const corsOptions ={
-  origin: 'https://betofeel.netlify.app',
+  origin: '*',
   credentials:true,            
   optionSuccessStatus:200,
 }
@@ -28,7 +28,7 @@ app.use(express.json())
 
 app.get('/', (req, res) => res.send('Success!!!'));
 app.use('/api/', users)
-app.use('/api/feeling', feelings)
-app.use('/api/share', share)
+/* app.use('/api/feeling', feelings)
+app.use('/api/share', share) */
 
 module.exports = app

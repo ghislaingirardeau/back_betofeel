@@ -4,42 +4,17 @@ const jwt = require('jsonwebtoken')
 /* CONNECTION MYSQL */
 const mysql = require('mysql');
 const config = require('../config');
-/* FOR PERMANENT CONNECTION BUT CRASH APP ON HEROKU */
-/* const connection = mysql.createConnection(config); */
-/* connection.connect(function(err) {
-    if (err) {
-      return console.error('error: ' + err.message);
-    }
-console.log('Connected to the MySQL server');
-}); */
 
 
-/* CREATION FONCTION POUR GERER LE CRASH ET RELANCER LA CONNECTION */
-// APPEL LA FONCTION SEULEMENT LORS DE L'APPEL DE LA ROUTE
-var connection;
+function closeDb (connection) {
+    connection.end(function(err) {
+        if (err) {
+          return console.log('error:' + err.message);
+        }
+        console.log('Close the database connection.');
+    });
 
-function handleDisconnect() {
-  connection = mysql.createConnection(config); // Recreate the connection, since
-                                                  // the old one cannot be reused.
-
-  connection.connect(function(err) {              // The server is either down
-    if(err) {                                     // or restarting (takes a while sometimes).
-      console.log('error when connecting to db:', err);
-      setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
-    }
-    console.log('Connected to the MySQL server');                                    
-  });                                     // process asynchronous requests in the meantime.
-                                          // If you're also serving http, display a 503 error.
-  connection.on('error', function(err) {
-    console.log('db error', err);
-    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-      handleDisconnect();                         // lost due to either server restart, or a
-    } else {                                      // connnection idle timeout (the wait_timeout
-      throw err;                                  // server variable configures this)
-    }
-  });
 }
-handleDisconnect();
 
 const salt = 10
 
@@ -100,41 +75,68 @@ exports.signup = (req, res, next) => {
     }
 }
 
-exports.login = (req, res, next) => { 
+exports.login = async (req, res, next) => { 
 
-    const sql = `SET @pseudo="${req.body.pseudo}"`;
-    connection.query(sql, (error, results, fields) => {
-        if (error) {
-            res.status(500).json({message: 'erreur database'})
-        }
-        else if(results){
-
-            const sql = `SELECT id, pseudo, password, roles, avatar FROM user WHERE pseudo=@pseudo`;
-            
-            connection.query(sql, (error, results, fields) => {
+    const connection = await mysql.createConnection(config)
+    if(connection) {
+        const sql = `SET @pseudo="${req.body.pseudo}"`
+        connection.query(sql, (error, results, fields) => {
+            if (error) {
+                res.status(500).json({message: 'erreur database'})
+                closeDb(connection)
+    
+            }
+            else if(results){
+    
+                const sql = `SELECT id, pseudo, password, roles, avatar FROM user WHERE pseudo=@pseudo`;
                 
-                if (results.length == 0 || error) { /* Si utilisateur n'existe pas, renvoie un tableau vide */
-                    res.status(400).json({message: "Ce pseudo n'existe pas"})
-                }
-                else if(results.length == 1){ /* Si utilisateur existe, renvoie un tableau avec une seule donnée */
-                    bcrypt.compare(req.body.password, results[0].password)
-                    .then(valid => {
-                        if (!valid){
-                        return res.status(400).json({message: "Ce mot de passe n'est pas valide"})
-                        }
-                        res.status(200).json({
-                        pseudo: results[0].pseudo,    
-                        userId: results[0].id,
-                            token: jwt.sign(
-                            {userId: results[0].id}, `${process.env.CLE}`,
-                            { expiresIn: '24h'}),
-                        role: results[0].roles,
-                        avatar: results[0].avatar
+                connection.query(sql, (error, results, fields) => {
+                    
+                    if (results.length == 0 || error) { /* Si utilisateur n'existe pas, renvoie un tableau vide */
+                        res.status(400).json({message: "Ce pseudo n'existe pas"})
+                        closeDb(connection)
+                    }
+                    else if(results.length == 1){ /* Si utilisateur existe, renvoie un tableau avec une seule donnée */
+                        bcrypt.compare(req.body.password, results[0].password)
+                        .then(valid => {
+                            if (!valid){
+                                return res.status(400).json({message: "Ce mot de passe n'est pas valide"})
+                                closeDb(connection)
+                            }
+                            res.status(200).json({
+                            pseudo: results[0].pseudo,    
+                            userId: results[0].id,
+                                token: jwt.sign(
+                                {userId: results[0].id}, `${process.env.CLE}`,
+                                { expiresIn: '24h'}),
+                            role: results[0].roles,
+                            avatar: results[0].avatar
+                            })
+                            closeDb(connection)
                         })
-                    })
-                    .catch(() => res.status(500).json({message: "erreur login"}))
-                }           
-            });
+                        .catch(() => res.status(500).json({message: "erreur login"}))
+                    }           
+                });
+            }
+        });
+    }
+}
+
+exports.test = async (req, res, next) => {
+    
+    const connection = await mysql.createConnection(config)
+    if(connection) {
+        const sql = `SELECT pseudo from user;`
+        const response = await connection.query(sql, (error, results, fields) => {
+            if (error) {
+                res.status(500).json({message: 'erreur database'})
+            } else if(results) {
+                res.send(results)
+            }
+        })
+        if(response) {
+            closeDb(connection)        
         }
-    });
+    }
+    
 }
