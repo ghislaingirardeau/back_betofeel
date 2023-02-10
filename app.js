@@ -7,10 +7,7 @@ const share = require("./routes/share");
 const app = express();
 
 const corsOptions = {
-  origin: [
-    "https://web-production-b214.up.railway.app",
-    "http://localhost:8000",
-  ],
+  origin: ["https://betofeel.netlify.app", "http://localhost:8000"],
   credentials: true,
   optionSuccessStatus: 200,
 };
